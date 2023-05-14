@@ -12,7 +12,10 @@ const User = database_1.default.define("user", {
         allowNull: false,
         primaryKey: true,
     },
-    name: sequelize_1.default.STRING,
-    email: sequelize_1.default.STRING,
+    email: { type: sequelize_1.default.STRING, allowNull: false },
+    firstName: sequelize_1.default.STRING,
+    lastName: sequelize_1.default.STRING,
+    image: sequelize_1.default.STRING,
+    pdf: sequelize_1.default.BLOB,
 });
 exports.default = User;

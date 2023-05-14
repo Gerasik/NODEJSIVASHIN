@@ -8,8 +8,11 @@ const User = db.define("user", {
     allowNull: false,
     primaryKey: true,
   },
-  name: Sequelize.STRING,
-  email: Sequelize.STRING,
+  email: { type: Sequelize.STRING, allowNull: false },
+  firstName: Sequelize.STRING,
+  lastName: Sequelize.STRING,
+  image: Sequelize.STRING,
+  pdf: Sequelize.BLOB,
 })
 
 export default User

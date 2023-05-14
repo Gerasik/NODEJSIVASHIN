@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const database_1 = __importDefault(require("./util/database"));
 const users_1 = __importDefault(require("./routes/users"));
+const path_1 = __importDefault(require("path"));
 const app = (0, express_1.default)();
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -14,12 +15,12 @@ app.use((req, res, next) => {
 });
 //test route
 app.get("/", (req, res) => {
-    res.send("Hello World");
+    res.sendFile(path_1.default.join(__dirname, "/index.html"));
 });
 //CRUD routes
 app.use("/users", users_1.default);
 //sync database
-database_1.default.sync()
+database_1.default.sync({ force: true })
     .then((result) => {
     console.log("Database connected");
     app.listen(3000);

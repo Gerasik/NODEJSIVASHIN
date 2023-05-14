@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express"
 import db from "./util/database"
 import userRoute from "./routes/users"
+import path from "path"
 
 const app = express()
 
@@ -12,14 +13,14 @@ app.use((req, res, next) => {
 
 //test route
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World")
+  res.sendFile(path.join(__dirname, "/index.html"))
 })
 
 //CRUD routes
 app.use("/users", userRoute)
 
 //sync database
-db.sync()
+db.sync({ force: true })
   .then((result) => {
     console.log("Database connected")
     app.listen(3000)
