@@ -13,4 +13,8 @@ const getUsers = (_req, res) => {
     })
         .catch((err) => console.log(err));
 };
-exports.default = { getUsers };
+const createUser = (req, res) => {
+    console.log("🚀 ~ file: users.ts:18 ~ createUser ~ req.body.firstName:", req.body);
+    res.status(201).send("created");
+};
+exports.default = { getUsers, createUser };

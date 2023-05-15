@@ -1,9 +1,12 @@
 import express, { Request, Response } from "express"
+import bodyparser from "body-parser"
 import db from "./util/database"
 import userRoute from "./routes/users"
 import path from "path"
 
 const app = express()
+
+app.set("view engine", "ejs")
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*")
@@ -11,9 +14,16 @@ app.use((req, res, next) => {
   next()
 })
 
+app.use(bodyparser.json())
+app.use(bodyparser.urlencoded({ extended: false }))
+
 //test route
 app.get("/", (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, "/index.html"))
+  res.render("pages/index")
+})
+
+app.get("/create_new", (req: Request, res: Response) => {
+  res.render("pages/new")
 })
 
 //CRUD routes
