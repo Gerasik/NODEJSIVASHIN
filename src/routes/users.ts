@@ -1,13 +1,14 @@
 import express from "express"
 import controller from "../controllers/users"
 import upload from "../middleware/upload"
+import { verifyToken } from "../middleware/authJwt"
 
 const router = express.Router()
 
-router.get("/", controller.getUsers)
-// router.get('/:userId', controller.getUser); // /users/:userId
-router.post("/", upload.single("avatar"), controller.createUser)
-router.put("/:userId", controller.updateUser) // /users/:userId
-router.delete("/:userId", controller.deleteUser)
+router.get("/", [verifyToken], controller.getUsers)
+router.get("/:userId", [verifyToken], controller.getUser)
+router.post("/", [verifyToken], upload.single("avatar"), controller.createUser)
+router.put("/:userId", [verifyToken], controller.updateUser)
+router.delete("/:userId", [verifyToken], controller.deleteUser)
 
 export default router

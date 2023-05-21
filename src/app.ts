@@ -2,6 +2,7 @@ import express, { Request, Response } from "express"
 import bodyparser from "body-parser"
 import db from "./util/database"
 import userRoute from "./routes/users"
+import authRoute from "./routes/auth"
 import path from "path"
 
 const app = express()
@@ -17,7 +18,7 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, "../public")))
 
 app.use(bodyparser.json())
-app.use(bodyparser.urlencoded({ extended: false }))
+app.use(bodyparser.urlencoded({ extended: true }))
 
 //test route
 app.get("/", (req: Request, res: Response) => {
@@ -30,6 +31,7 @@ app.get("/create_new", (req: Request, res: Response) => {
 
 //CRUD routes
 app.use("/users", userRoute)
+app.use("/auth", authRoute)
 
 //sync database
 db.sync({ force: true })

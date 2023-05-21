@@ -15,8 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const pdfkit_1 = __importDefault(require("pdfkit"));
 const blob_stream_1 = __importDefault(require("blob-stream"));
 const user_1 = __importDefault(require("../models/user"));
-// CRUD Controllers
-//get all users
 const getUsers = (_req, res) => {
     user_1.default.findAll()
         .then((users) => {
@@ -24,6 +22,21 @@ const getUsers = (_req, res) => {
     })
         .catch((err) => console.log(err));
 };
+const getUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.userId;
+    try {
+        const user = yield user_1.default.findByPk(userId);
+        if (!user) {
+            res.status(404).json({ message: "User not found!" });
+        }
+        else {
+            res.status(200).json({ message: "User founded!", user });
+        }
+    }
+    catch (error) {
+        console.log(error);
+    }
+});
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const email = req.body.email;
     const firstName = req.body.firstName;
@@ -83,10 +96,13 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 user.email = email;
             }
             if (firstName) {
+                user.firstName = firstName;
             }
             if (lastName) {
+                user.lastName = lastName;
             }
             if (image) {
+                user.image = image;
             }
             const result = yield user.save();
             res.status(200).json({ message: "User updated!", user: result });
@@ -95,21 +111,6 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     catch (error) {
         console.log(error);
     }
-    // const updatedName = req.body.name;
-    // const updatedEmail = req.body.email;
-    // User.findByPk(userId)
-    //   .then(user => {
-    //     if (!user) {
-    //       return res.status(404).json({ message: 'User not found!' });
-    //     }
-    //     user.name = updatedName;
-    //     user.email = updatedEmail;
-    //     return user.save();
-    //   })
-    //   .then(result => {
-    //     res.status(200).json({message: 'User updated!', user: result});
-    //   })
-    //   .catch(err => console.log(err));
 });
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.userId;
@@ -131,4 +132,4 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         console.log(error);
     }
 });
-exports.default = { getUsers, createUser, updateUser, deleteUser };
+exports.default = { getUsers, getUser, createUser, updateUser, deleteUser };

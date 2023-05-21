@@ -4,15 +4,27 @@ import blobStream from "blob-stream"
 
 import User from "../models/user"
 
-// CRUD Controllers
-
-//get all users
 const getUsers = (_req: Request, res: Response) => {
   User.findAll()
     .then((users) => {
       res.status(200).json({ users: users })
     })
     .catch((err) => console.log(err))
+}
+
+const getUser = async (req: Request, res: Response) => {
+  const userId = req.params.userId
+
+  try {
+    const user = await User.findByPk(userId)
+    if (!user) {
+      res.status(404).json({ message: "User not found!" })
+    } else {
+      res.status(200).json({ message: "User founded!", user })
+    }
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 const createUser = async (req: Request, res: Response) => {
@@ -75,10 +87,13 @@ const updateUser = async (req: Request, res: Response) => {
         user.email = email
       }
       if (firstName) {
+        user.firstName = firstName
       }
       if (lastName) {
+        user.lastName = lastName
       }
       if (image) {
+        user.image = image
       }
       const result = await user.save()
       res.status(200).json({ message: "User updated!", user: result })
@@ -86,21 +101,6 @@ const updateUser = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error)
   }
-  // const updatedName = req.body.name;
-  // const updatedEmail = req.body.email;
-  // User.findByPk(userId)
-  //   .then(user => {
-  //     if (!user) {
-  //       return res.status(404).json({ message: 'User not found!' });
-  //     }
-  //     user.name = updatedName;
-  //     user.email = updatedEmail;
-  //     return user.save();
-  //   })
-  //   .then(result => {
-  //     res.status(200).json({message: 'User updated!', user: result});
-  //   })
-  //   .catch(err => console.log(err));
 }
 
 const deleteUser = async (req: Request, res: Response) => {
@@ -122,4 +122,4 @@ const deleteUser = async (req: Request, res: Response) => {
   }
 }
 
-export default { getUsers, createUser, updateUser, deleteUser }
+export default { getUsers, getUser, createUser, updateUser, deleteUser }

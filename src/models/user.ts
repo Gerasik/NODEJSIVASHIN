@@ -1,4 +1,4 @@
-import Sequelize, { Optional, DataTypes, Model } from "sequelize"
+import { Optional, DataTypes, Model } from "sequelize"
 import db from "../util/database"
 
 interface UserFiled {
