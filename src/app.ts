@@ -20,7 +20,6 @@ app.use(express.static(path.join(__dirname, "../public")))
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: true }))
 
-//test route
 app.get("/", (req: Request, res: Response) => {
   res.render("pages/index")
 })
@@ -29,11 +28,9 @@ app.get("/create_new", (req: Request, res: Response) => {
   res.render("pages/new")
 })
 
-//CRUD routes
 app.use("/users", userRoute)
 app.use("/auth", authRoute)
 
-//sync database
 db.sync({ force: true })
   .then((result) => {
     console.log("Database connected")

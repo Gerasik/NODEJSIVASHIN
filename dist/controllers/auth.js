@@ -40,7 +40,7 @@ const signin = (req, res) => {
             });
         }
         var token = jsonwebtoken_1.default.sign({ id: user.id }, auth_1.SECRET, {
-            expiresIn: 86400, // 24 hours
+            expiresIn: 86400,
         });
         res.status(200).send({
             id: user.id,
