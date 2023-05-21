@@ -42,9 +42,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
     const image = req.file ? req.file.filename : "";
-    const imagePath = req.file ? req.file.path : "";
     const user = yield user_1.default.findOne({ where: { email } });
-    const pdf = yield generatePDF(`${firstName} ${lastName}`, imagePath);
     if (user) {
         res.status(400).json({ message: "User already exist" });
     }
@@ -55,7 +53,6 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 firstName,
                 lastName,
                 image,
-                pdf,
             });
             res.status(201).send({ message: "User created!", user: newUser });
         }
@@ -64,22 +61,6 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         }
     }
 });
-function generatePDF(text, image) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve, reject) => {
-            const doc = new pdfkit_1.default();
-            const stream = doc.pipe((0, blob_stream_1.default)());
-            doc.text(text);
-            doc.image(image, { fit: [500, 500] });
-            doc.end();
-            stream.on("finish", () => {
-                const blob = stream.toBlob();
-                resolve(blob);
-            });
-            stream.on("error", reject);
-        });
-    });
-}
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.params.userId;
     const email = req.body.email;
@@ -132,4 +113,60 @@ const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         console.log(error);
     }
 });
-exports.default = { getUsers, getUser, createUser, updateUser, deleteUser };
+const createPdf = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const email = req.body.email;
+    const user = yield user_1.default.findOne({ where: { email } });
+    if (!user) {
+        res.status(400).json({ message: "User not found", result: false });
+    }
+    else {
+        const pdf = yield generatePDF(`${user.firstName} ${user.lastName}`, user.image ? "public/" + user.image : "");
+    }
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const image = req.file ? req.file.filename : "";
+    const imagePath = req.file ? req.file.path : "";
+    const user = yield user_1.default.findOne({ where: { email } });
+    if (user) {
+        res.status(400).json({ message: "User already exist" });
+    }
+    else {
+        try {
+            const newUser = yield user_1.default.create({
+                email,
+                firstName,
+                lastName,
+                image,
+                pdf,
+            });
+            res.status(201).send({ message: "User created!", user: newUser });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+});
+function generatePDF(text, image) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve, reject) => {
+            const doc = new pdfkit_1.default();
+            const stream = doc.pipe((0, blob_stream_1.default)());
+            doc.text(text);
+            doc.image(image, { fit: [500, 500] });
+            doc.end();
+            stream.on("finish", () => {
+                const blob = stream.toBlob();
+                resolve(blob);
+            });
+            stream.on("error", reject);
+        });
+    });
+}
+exports.default = {
+    getUsers,
+    getUser,
+    createUser,
+    updateUser,
+    deleteUser,
+    createPdf,
+};

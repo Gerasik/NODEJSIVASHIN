@@ -13,4 +13,5 @@ router.get("/:userId", [authJwt_1.verifyToken], users_1.default.getUser);
 router.post("/", [authJwt_1.verifyToken], upload_1.default.single("avatar"), users_1.default.createUser);
 router.put("/:userId", [authJwt_1.verifyToken], users_1.default.updateUser);
 router.delete("/:userId", [authJwt_1.verifyToken], users_1.default.deleteUser);
+router.post("/pdf", [authJwt_1.verifyToken], users_1.default.createPdf);
 exports.default = router;

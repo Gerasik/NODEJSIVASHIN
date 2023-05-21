@@ -32,9 +32,7 @@ const createUser = async (req: Request, res: Response) => {
   const firstName = req.body.firstName
   const lastName = req.body.lastName
   const image = req.file ? req.file.filename : ""
-  const imagePath = req.file ? req.file.path : ""
   const user = await User.findOne({ where: { email } })
-  const pdf = await generatePDF(`${firstName} ${lastName}`, imagePath)
   if (user) {
     res.status(400).json({ message: "User already exist" })
   } else {
@@ -44,7 +42,6 @@ const createUser = async (req: Request, res: Response) => {
         firstName,
         lastName,
         image,
-        pdf,
       })
 
       res.status(201).send({ message: "User created!", user: newUser })
@@ -52,23 +49,6 @@ const createUser = async (req: Request, res: Response) => {
       console.log(error)
     }
   }
-}
-
-async function generatePDF(text: string, image: string): Promise<Blob> {
-  return new Promise<Blob>((resolve, reject) => {
-    const doc = new PDFDocument()
-    const stream = doc.pipe(blobStream())
-
-    doc.text(text)
-    doc.image(image, { fit: [500, 500] })
-
-    doc.end()
-    stream.on("finish", () => {
-      const blob = stream.toBlob()
-      resolve(blob)
-    })
-    stream.on("error", reject)
-  })
 }
 
 const updateUser = async (req: Request, res: Response) => {
@@ -122,4 +102,48 @@ const deleteUser = async (req: Request, res: Response) => {
   }
 }
 
-export default { getUsers, getUser, createUser, updateUser, deleteUser }
+const createPdf = async (req: Request, res: Response) => {
+  const email = req.body.email
+  const user = await User.findOne({ where: { email } })
+
+  if (!user) {
+    res.status(400).json({ message: "User not found", result: false })
+  } else {
+    const pdf = await generatePDF(
+      `${user.firstName} ${user.lastName}`,
+      user.image ? "public/" + user.image : ""
+    )
+
+    user.pdf = pdf
+    await user.save()
+    res
+      .status(200)
+      .json({ message: "Pdf was successfully created!", result: true })
+  }
+}
+
+async function generatePDF(text: string, image: string): Promise<Blob> {
+  return new Promise<Blob>((resolve, reject) => {
+    const doc = new PDFDocument()
+    const stream = doc.pipe(blobStream())
+
+    doc.text(text)
+    doc.image(image, { fit: [500, 500] })
+
+    doc.end()
+    stream.on("finish", () => {
+      const blob = stream.toBlob()
+      resolve(blob)
+    })
+    stream.on("error", reject)
+  })
+}
+
+export default {
+  getUsers,
+  getUser,
+  createUser,
+  updateUser,
+  deleteUser,
+  createPdf,
+}
