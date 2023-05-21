@@ -14,6 +14,8 @@ app.use((req, res, next) => {
   next()
 })
 
+app.use(express.static(path.join(__dirname, "../public")))
+
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: false }))
 

@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const database_1 = __importDefault(require("./util/database"));
 const users_1 = __importDefault(require("./routes/users"));
+const path_1 = __importDefault(require("path"));
 const app = (0, express_1.default)();
 app.set("view engine", "ejs");
 app.use((req, res, next) => {
@@ -14,6 +15,7 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
     next();
 });
+app.use(express_1.default.static(path_1.default.join(__dirname, "../public")));
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 //test route

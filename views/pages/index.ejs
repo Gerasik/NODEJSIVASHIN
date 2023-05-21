@@ -10,8 +10,53 @@
       <div class="jumbotron">
         <h1>This is great</h1>
         <p>Welcome to templating using EJS</p>
+        <div class="container">
+          <ul id="userList" class="d-flex flex-column mb-3 list-group"></ul>
+        </div>
       </div>
     </main>
+    <script>
+      fetch("/users")
+        .then((e) => e.json())
+        .then((res) => {
+          console.log(res)
+          if (res.users && res.users.length) {
+            const listEl = document.getElementById("userList")
+            res.users.forEach(
+              ({ id, email, firstName, lastName, image, pdf }) => {
+                const itemEl = document.createElement("LI")
+
+                itemEl.className =
+                  "list-group-item gap-2 d-flex justify-content-start"
+                itemEl.innerHTML = `<span class="badge d-flex align-items-center p-1 pe-2 text-secondary-emphasis bg-secondary-subtle border border-secondary-subtle rounded-pill">
+        <img class="rounded-circle me-1" width="24" height="24" src="${image}" alt="">
+        ${firstName} ${lastName} (${email})
+        <span class="vr mx-2"></span>
+        <a class="remove-button" data-id=${id} href="#">x</a>
+      </span>`
+                const downloadLink = document.createElement("a")
+                downloadLink.href = window.URL.createObjectURL(new Blob([pdf]))
+                downloadLink.innerText = "download PDF"
+                downloadLink.download = "имя_файла.pdf"
+                itemEl.appendChild(downloadLink)
+                listEl.appendChild(itemEl)
+              }
+            )
+          }
+          const removeButton = document.querySelectorAll(".remove-button")
+          if (removeButton.length) {
+            removeButton.forEach((btn) => {
+              btn.addEventListener("click", async (e) => {
+                e.preventDefault()
+                const id = e.target.dataset.id
+                await fetch(`/users/${id}`, { method: "DELETE" })
+                  .then((e) => window.location.reload())
+                  .catch((e) => console.error("remove user error", e))
+              })
+            })
+          }
+        })
+    </script>
 
     <footer><%- include('../partials/footer'); %></footer>
   </body>
